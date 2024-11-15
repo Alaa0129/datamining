@@ -1,0 +1,8 @@
+1. Feature selection
+  - Pearson model for at se hvad variabler skal være med i modelen
+2. Formulere spørgsmål efter feature selection
+
+
+Muligheder: 
+  - linear Regression 
+  - neural networks (
