@@ -1,8 +1,13 @@
+15 November 
 1. Feature selection
   - Pearson model for at se hvad variabler skal være med i modelen
 2. Formulere spørgsmål efter feature selection
 
 
-Muligheder: 
+Mulig modeler: 
   - linear Regression 
-  - neural networks (
+  - neural networks 
+
+Daniel: preprocessing
+Alaa: pearson 
+
