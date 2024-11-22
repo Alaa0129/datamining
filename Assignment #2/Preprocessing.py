@@ -9,7 +9,7 @@ from sklearn.linear_model import LinearRegression
 
 # %%
 # Load the data
-df = pd.read_csv('Student_Alcohol_Consumption_Data/student-mat.csv')
+df = pd.read_csv('Student_Alcohol_Consumption_Data\student-mat.csv')
 df.head()
 
 # %%
@@ -35,6 +35,9 @@ df['Fjob'] = df['Fjob'].replace(['teacher', 'health', 'civil', 'at_home', 'other
 df['reason'] = df['reason'].replace(['home', 'reputation', 'course', 'other'], [0, 1, 2, 3])
 df['guardian'] = df['guardian'].replace(['mother', 'father', 'other'], [0, 1, 2])
 
+# %%
+# Categorize G3 into 4 categories
+df['G3'] = df['G3'].apply(lambda x: 0 if x <= 5 else 1 if x <= 10 else 2 if x <= 15 else 3)
 
 # %%
 # export the data
