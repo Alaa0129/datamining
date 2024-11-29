@@ -17,5 +17,5 @@ df = df.drop('failures', axis=1)
 corr = df.corr(method='pearson', numeric_only=True)
 corr
 
-# fig, ax = plt.subplots(figsize=(30,30))
-# sns.heatmap(corr, vmin= -1, vmax=1, xticklabels=corr.columns, yticklabels=corr.columns, cmap='RdBu_r', annot=True, linewidth=0.5, ax=ax)
+fig, ax = plt.subplots(figsize=(30,30))
+sns.heatmap(corr, vmin= -1, vmax=1, xticklabels=corr.columns, yticklabels=corr.columns, cmap='RdBu_r', annot=True, linewidth=0.5, ax=ax)
