@@ -19,3 +19,8 @@ corr
 
 fig, ax = plt.subplots(figsize=(30,30))
 sns.heatmap(corr, vmin= -1, vmax=1, xticklabels=corr.columns, yticklabels=corr.columns, cmap='RdBu_r', annot=True, linewidth=0.5, ax=ax)
+
+
+# %%
+df.drop('G3', axis=1).corrwith(df.G3).sort_values().plot(kind='barh', figsize=(15, 10))
+# %%
