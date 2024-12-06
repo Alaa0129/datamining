@@ -35,9 +35,38 @@ df['Fjob'] = df['Fjob'].replace(['teacher', 'health', 'civil', 'at_home', 'other
 df['reason'] = df['reason'].replace(['home', 'reputation', 'course', 'other'], [0, 1, 2, 3])
 df['guardian'] = df['guardian'].replace(['mother', 'father', 'other'], [0, 1, 2])
 
+# %%  plot the distribution of the target variable G3 before categorization
+plt.figure(figsize=(10, 5))
+sns.histplot(df['G3'])
+plt.show()
 # %%
 # Categorize G3 into 4 categories
 df['G3'] = df['G3'].apply(lambda x: 0 if x <= 5 else 1 if x <= 10 else 2 if x <= 15 else 3)
+
+# %% 
+# find the mean and standard deviation of each column
+mean = df.mean()
+std = df.std()
+
+#print(mean)
+#print(std)
+# %%
+# plot the distribution of the target variable G3 after categorization
+plt.figure(figsize=(10, 5))
+sns.histplot(df['G3'])
+plt.show()
+
+# %%
+# plot the distribution of all the features in the dataset
+df.hist(figsize=(20, 20))
+plt.show()
+
+# %% 
+# find value counts of the distribution of all features
+for col in df.columns:
+    print(col)
+    print(df[col].value_counts(normalize=True))
+    print()
 
 # %%
 # export the data
