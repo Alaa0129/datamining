@@ -8,6 +8,31 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 
 # %%
+# Distribution graphs (histogram/bar graph) of column data
+def plotPerColumnDistribution(df, nGraphShown, nGraphPerRow):
+    nunique = df.nunique()
+    df = df[[col for col in df if nunique[col] > 1 and nunique[col] < 50]] # For displaying purposes, pick columns that have between 1 and 50 unique values
+    nRow, nCol = df.shape
+    print(nRow, nCol)
+    columnNames = list(df)
+    nGraphRow = int(nCol / nGraphPerRow)
+    plt.figure(num = None, figsize = (6 * nGraphPerRow, 8 * nGraphRow), dpi = 80, facecolor = 'w', edgecolor = 'k')
+    for i in range(min(nCol, nGraphShown)):
+        plt.subplot(nGraphRow, nGraphPerRow, i + 1)
+        columnDf = df.iloc[:, i]
+        if (not np.issubdtype(type(columnDf.iloc[0]), np.number)):
+            valueCounts = columnDf.value_counts()
+            valueCounts.plot.bar()
+        else:
+            columnDf.hist()
+        plt.ylabel('counts')
+        plt.xticks(rotation = 90)
+        plt.title(f'{columnNames[i]} (column {i})')
+    plt.tight_layout(pad = 1.0, w_pad = 1.0, h_pad = 1.0)
+    plt.show()
+
+
+# %%
 df_por = pd.read_csv('Student_Alcohol_Consumption_Data/student-por.csv')
 # %%
 # Load the data
@@ -20,6 +45,25 @@ df.head()
 
 # see how many rows
 print(df.shape)
+
+# %% 
+data = df[['address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'guardian', 'traveltime', 'famsup', 'internet', 'famrel']]
+plotPerColumnDistribution(data, 12, 3)
+
+# %%
+# scatterplot of Fjob, Mjob, and G3
+for variable in ['Fjob', 'Mjob']:
+    x = df[variable].replace(['teacher', 'health', 'services', 'at_home', 'other'], [0, 1, 2, 3, 4])
+    y = df['G3']
+
+    xy = np.vstack([x, y])
+    density = stats.gaussian_kde(xy)(xy)
+
+    plt.figure(figsize=(10, 5))
+    plt.scatter(df[variable], df['G3'], s=density*5000, cmap='viridis', edgecolor='k', alpha=0.7)
+    plt.colorbar(label='Density')
+    plt.title(f'{variable} vs Final Grade')
+    plt.show()
 
 # %%
 # transform all the categorical variables to numerical values
@@ -39,8 +83,8 @@ df['romantic'] = df['romantic'].apply(lambda x: 1 if x == 'yes' else 0)
 
 # %%
 # transform nominal variables to numerical values
-df['Mjob'] = df['Mjob'].replace(['teacher', 'health', 'civil', 'at_home', 'other', 'services'], [0, 1, 2, 3, 4, 5])
-df['Fjob'] = df['Fjob'].replace(['teacher', 'health', 'civil', 'at_home', 'other', 'services'], [0, 1, 2, 3, 4, 5])
+df['Mjob'] = df['Mjob'].replace(['teacher', 'health', 'services', 'at_home', 'other'], [0, 1, 2, 3, 4])
+df['Fjob'] = df['Fjob'].replace(['teacher', 'health', 'services', 'at_home', 'other'], [0, 1, 2, 3, 4])
 df['reason'] = df['reason'].replace(['home', 'reputation', 'course', 'other'], [0, 1, 2, 3])
 df['guardian'] = df['guardian'].replace(['mother', 'father', 'other'], [0, 1, 2])
 
