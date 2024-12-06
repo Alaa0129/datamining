@@ -57,7 +57,7 @@ std = df.std()
 print(std)
 # %%
 # Categorize G3 into 4 categories
-df['G3'] = df['G3'].apply(lambda x: 0 if x <= 5 else 1 if x <= 10 else 2 if x <= 15 else 3)
+df['G3'] = df['G3'].apply(lambda x: 1 if x <= 5 else 2 if x <= 10 else 3 if x <= 15 else 4)
 
 # %% 
 # find the mean and standard deviation of each column
@@ -87,3 +87,5 @@ for col in df.columns:
 # %%
 # export the data
 df.to_csv('Student_Alcohol_Consumption_Data/student-transformed.csv', index=False)
+
+# %%
