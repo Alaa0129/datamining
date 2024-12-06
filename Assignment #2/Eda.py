@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 pd.set_option('display.max_columns', None)
-df = pd.read_csv('Student_Alcohol_Consumption_Data\student-mat-transformed.csv')
+df = pd.read_csv('Student_Alcohol_Consumption_Data/student-transformed.csv')
 
 df.head()
 
@@ -21,6 +21,8 @@ fig, ax = plt.subplots(figsize=(30,30))
 sns.heatmap(corr, vmin= -1, vmax=1, xticklabels=corr.columns, yticklabels=corr.columns, cmap='RdBu_r', annot=True, linewidth=0.5, ax=ax)
 
 
+# %% 
+# check each feature 
 # %%
 df.drop('G3', axis=1).corrwith(df.G3).sort_values().plot(kind='barh', figsize=(15, 10))
 # %%

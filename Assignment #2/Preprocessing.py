@@ -8,9 +8,18 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 
 # %%
+df_por = pd.read_csv('Student_Alcohol_Consumption_Data/student-por.csv')
+# %%
 # Load the data
-df = pd.read_csv('Student_Alcohol_Consumption_Data\student-mat.csv')
+df_mat = pd.read_csv('Student_Alcohol_Consumption_Data/student-mat.csv')
+df_mat.head()
+
+# %%
+df = pd.concat([df_mat, df_por]).drop_duplicates(subset=['school', 'sex', 'age', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'reason', 'guardian', 'traveltime', 'failures', 'schoolsup', 'famsup', 'activities', 'nursery', 'higher', 'internet', 'romantic', 'famrel', 'freetime', 'goout', 'Dalc', 'Walc', 'health']).reset_index(drop=True)
 df.head()
+
+# see how many rows
+print(df.shape)
 
 # %%
 # transform all the categorical variables to numerical values
@@ -39,6 +48,13 @@ df['guardian'] = df['guardian'].replace(['mother', 'father', 'other'], [0, 1, 2]
 plt.figure(figsize=(10, 5))
 sns.histplot(df['G3'])
 plt.show()
+
+# %% mean and std before categorization
+mean = df.mean()
+std = df.std()
+
+#print(mean)
+print(std)
 # %%
 # Categorize G3 into 4 categories
 df['G3'] = df['G3'].apply(lambda x: 0 if x <= 5 else 1 if x <= 10 else 2 if x <= 15 else 3)
@@ -49,7 +65,7 @@ mean = df.mean()
 std = df.std()
 
 #print(mean)
-#print(std)
+print(std)
 # %%
 # plot the distribution of the target variable G3 after categorization
 plt.figure(figsize=(10, 5))
@@ -70,4 +86,4 @@ for col in df.columns:
 
 # %%
 # export the data
-df.to_csv('Student_Alcohol_Consumption_Data/student-mat-transformed.csv', index=False)
+df.to_csv('Student_Alcohol_Consumption_Data/student-transformed.csv', index=False)
