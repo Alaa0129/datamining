@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
+from scipy import stats
 
 # %%
 # Distribution graphs (histogram/bar graph) of column data
@@ -51,7 +52,7 @@ data = df[['address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'gua
 plotPerColumnDistribution(data, 12, 3)
 
 # %%
-# scatterplot of Fjob, Mjob, and G3
+# scatterplot of Fjob, Mjob, and G3 (highest correlation scores)
 for variable in ['Fjob', 'Mjob']:
     x = df[variable].replace(['teacher', 'health', 'services', 'at_home', 'other'], [0, 1, 2, 3, 4])
     y = df['G3']
@@ -97,7 +98,7 @@ plt.show()
 mean = df.mean()
 std = df.std()
 
-#print(mean)
+print(mean)
 print(std)
 # %%
 # Categorize G3 into 4 categories
@@ -108,7 +109,7 @@ df['G3'] = df['G3'].apply(lambda x: 1 if x <= 5 else 2 if x <= 10 else 3 if x <=
 mean = df.mean()
 std = df.std()
 
-#print(mean)
+print(mean)
 print(std)
 # %%
 # plot the distribution of the target variable G3 after categorization
@@ -131,5 +132,4 @@ for col in df.columns:
 # %%
 # export the data
 df.to_csv('Student_Alcohol_Consumption_Data/student-transformed.csv', index=False)
-
 # %%
