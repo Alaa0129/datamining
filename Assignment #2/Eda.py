@@ -22,7 +22,7 @@ fig, ax = plt.subplots(figsize=(30,30))
 sns.heatmap(corr, vmin= -1, vmax=1, xticklabels=corr.columns, yticklabels=corr.columns, cmap='RdBu_r', annot=True, linewidth=0.5, ax=ax)
 
 # %%
-# Correlation matrix
+# Correlation matrix for family characteristics
 def plotCorrelationMatrix(df, graphWidth):
     name = 'Family Characteristics'
     df = df[[col for col in df if df[col].nunique() > 1]] # keep columns where there are more than 1 unique values
@@ -54,7 +54,7 @@ for column in none_binary_variables:
     plt.title(column)
     plt.show()
 # %% 
-# show outlier for variables 
+# show outlier for variables using a scatterplot
 for variable in variables:
     tmp = df[variable]
     z_scores = stats.zscore(tmp)
@@ -69,8 +69,8 @@ for variable in variables:
 #df['Medu'] = filtered_data
 
 # %%
-# Look at pearson correlation between Fedu, Medu, and internet, and G3
-for variable in ['Fedu', 'Medu', 'internet']:
+# Look at pearson correlation between continuous variables and G3
+for variable in ['Fedu', 'Medu', 'famrel']:
     pearson_correlation = df[variable].corr(df['G3'])
     print(f'Pearson correlation between {variable} and G3: {pearson_correlation}')
     plt.figure(figsize=(10, 5))
@@ -81,10 +81,18 @@ for variable in ['Fedu', 'Medu', 'internet']:
     plt.legend()
     plt.show()
 
-# %%
-# calculate the pearson correlation coefficient between the variables
-pearson_correlation = df['Medu'].corr(df['G3'])
-pearson_correlation
+# %% find average score for each Medu and Fedu level and plot in scatterplot
+df.groupby('Medu')['G3'].mean().plot(kind='bar') 
+plt.title('Average Final Grade by Mother Education Level')
+plt.show()
+
+df.groupby('Fedu')['G3'].mean().plot(kind='bar')
+plt.title('Average Final Grade by Father Education Level')
+plt.show()
 
 # %%
 df.drop('G3', axis=1).corrwith(df.G3).sort_values().plot(kind='barh', figsize=(15, 10))
+
+# %%
+df.head()
+# %%

@@ -67,6 +67,81 @@ for variable in ['Fjob', 'Mjob']:
     plt.show()
 
 # %%
+# scatterplot of internet and G3 
+for variable in ['internet']:
+    x = df[variable].replace(['no', 'yes'], [0, 1])
+    y = df['G3']
+
+    xy = np.vstack([x, y])
+    density = stats.gaussian_kde(xy)(xy)
+
+    plt.figure(figsize=(10, 5))
+    plt.scatter(df[variable], df['G3'], s=density*1000, cmap='viridis', edgecolor='k', alpha=0.7)
+    plt.colorbar(label='Density')
+    plt.title(f'{variable} vs Final Grade')
+    plt.show()
+
+# %%
+# scatterplot of famsup (family support) and G3
+for variable in ['famsup']:
+    x = df[variable].replace(['no', 'yes'], [0, 1])
+    y = df['G3']
+
+    xy = np.vstack([x, y])
+    density = stats.gaussian_kde(xy)(xy)
+
+    plt.figure(figsize=(10, 5))
+    plt.scatter(df[variable], df['G3'], s=density*1000, cmap='viridis', edgecolor='k', alpha=0.7)
+    plt.colorbar(label='Density')
+    plt.title(f'{variable} vs Final Grade')
+    plt.show()
+
+# %%
+# scatterplot of guardian and G3
+for variable in ['guardian']:
+    x = df[variable].replace(['mother', 'father', 'other'], [0, 1, 2])
+    y = df['G3']
+
+    xy = np.vstack([x, y])
+    density = stats.gaussian_kde(xy)(xy)
+
+    plt.figure(figsize=(10, 5))
+    plt.scatter(df[variable], df['G3'], s=density*1000, cmap='viridis', edgecolor='k', alpha=0.7)
+    plt.colorbar(label='Density')
+    plt.title(f'{variable} vs Final Grade')
+    plt.show()
+
+#%% 
+# scatterplot of famsize and G3
+for variable in ['famsize']:
+    x = df[variable].replace(['GT3','LE3'], [0, 1])
+    y = df['G3']
+
+    xy = np.vstack([x, y])
+    density = stats.gaussian_kde(xy)(xy)
+
+    plt.figure(figsize=(10, 5))
+    plt.scatter(df[variable], df['G3'], s=density*1000, cmap='viridis', edgecolor='k', alpha=0.7)
+    plt.colorbar(label='Density')
+    plt.title(f'{variable} vs Final Grade')
+    plt.show()
+
+#%%
+# scatterplot of Pstatus (cohabitation status) and G3
+for variable in ['Pstatus']:
+    x = df[variable].replace(['A', 'T'], [0, 1])
+    y = df['G3']
+
+    xy = np.vstack([x, y])
+    density = stats.gaussian_kde(xy)(xy)
+
+    plt.figure(figsize=(10, 5))
+    plt.scatter(df[variable], df['G3'], s=density*1000, cmap='viridis', edgecolor='k', alpha=0.7)
+    plt.colorbar(label='Density')
+    plt.title(f'{variable} vs Final Grade')
+    plt.show()
+
+# %%
 # transform all the categorical variables to numerical values
 df['school'] = df['school'].apply(lambda x: 1 if x == 'GP' else 0)
 df['sex'] = df['sex'].apply(lambda x: 1 if x == 'F' else 0)
@@ -100,9 +175,16 @@ std = df.std()
 
 print(mean)
 print(std)
+
 # %%
-# Categorize G3 into 4 categories
-df['G3'] = df['G3'].apply(lambda x: 1 if x <= 5 else 2 if x <= 10 else 3 if x <= 15 else 4)
+# Categorize G3 into 4 categories based on the distribution
+# find distribution of G3
+
+df['G3'] = df['G3'].apply(lambda x: 1 if x <= 8 else 2 if x <= 10 else 3 if x <= 13 else 4)
+
+#%%
+count_of_value = (df['G3'] == 4).sum()
+print(f'Count of value : {count_of_value}')
 
 # %% 
 # find the mean and standard deviation of each column
@@ -129,7 +211,15 @@ for col in df.columns:
     print(df[col].value_counts(normalize=True))
     print()
 
+# %% 
+# remove entries where Medu =0 and Fedu = 0, as there are not many entries with these values
+df = df[df['Fedu'] != 0]
+df = df[df['Medu'] != 0]
+
 # %%
 # export the data
 df.to_csv('Student_Alcohol_Consumption_Data/student-transformed.csv', index=False)
+
+# %%
+df.head()
 # %%
