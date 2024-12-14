@@ -10,7 +10,7 @@ from scipy import stats
 
 # %%
 # Distribution graphs (histogram/bar graph) of column data
-def plotPerColumnDistribution(df, nGraphShown, nGraphPerRow):
+def plotPerColumnDistribution(df, nGraphShown, nGraphPerRow, title = None):
     nunique = df.nunique()
     df = df[[col for col in df if nunique[col] > 1 and nunique[col] < 50]] # For displaying purposes, pick columns that have between 1 and 50 unique values
     nRow, nCol = df.shape
@@ -28,9 +28,13 @@ def plotPerColumnDistribution(df, nGraphShown, nGraphPerRow):
             columnDf.hist()
         plt.ylabel('counts')
         plt.xticks(rotation = 90)
-        plt.title(f'{columnNames[i]} (column {i})')
+        plt.title(f'{title} {columnNames[i]} (column {i})')
     plt.tight_layout(pad = 1.0, w_pad = 1.0, h_pad = 1.0)
     plt.show()
+
+# %%
+def returnGender():
+    return 'Male' if data is df_boys else 'Female' if data is df_girls else 'Combined'
 
 
 # %%
@@ -48,133 +52,110 @@ df.head()
 print(df.shape)
 
 # %% 
-data = df[['address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'guardian', 'traveltime', 'famsup', 'internet', 'famrel']]
-plotPerColumnDistribution(data, 12, 3)
+df = df[['sex', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'guardian', 'traveltime', 'famsup', 'famrel', 'G3']]
+
+df_boys = df[df['sex'] == 'M']
+df_girls = df[df['sex'] == 'F']
+df_boys = df_boys.drop(['sex'], axis=1)
+df_girls = df_girls.drop(['sex'], axis=1)
+dataframes = [df_boys, df_girls, df]
+
+plotPerColumnDistribution(df.drop(['sex'], axis=1), 12, 3)
+plotPerColumnDistribution(df_boys, 12, 3, 'Male')
+plotPerColumnDistribution(df_girls, 12, 3, 'Female')
 
 # %%
 # scatterplot of Fjob, Mjob, and G3 (highest correlation scores)
-for variable in ['Fjob', 'Mjob']:
-    x = df[variable].replace(['teacher', 'health', 'services', 'at_home', 'other'], [0, 1, 2, 3, 4])
-    y = df['G3']
+for data in dataframes:
+    for variable in ['Fjob', 'Mjob']:
+        x = data[variable].replace(['teacher', 'health', 'services', 'at_home', 'other'], [0, 1, 2, 3, 4])
+        y = data['G3']
 
-    xy = np.vstack([x, y])
-    density = stats.gaussian_kde(xy)(xy)
+        xy = np.vstack([x, y])
+        density = stats.gaussian_kde(xy)(xy)
 
-    plt.figure(figsize=(10, 5))
-    plt.scatter(df[variable], df['G3'], s=density*5000, cmap='viridis', edgecolor='k', alpha=0.7)
-    plt.colorbar(label='Density')
-    plt.title(f'{variable} vs Final Grade')
-    plt.show()
-
-# %%
-# scatterplot of internet and G3 
-for variable in ['internet']:
-    x = df[variable].replace(['no', 'yes'], [0, 1])
-    y = df['G3']
-
-    xy = np.vstack([x, y])
-    density = stats.gaussian_kde(xy)(xy)
-
-    plt.figure(figsize=(10, 5))
-    plt.scatter(df[variable], df['G3'], s=density*1000, cmap='viridis', edgecolor='k', alpha=0.7)
-    plt.colorbar(label='Density')
-    plt.title(f'{variable} vs Final Grade')
-    plt.show()
+        plt.figure(figsize=(10, 5))
+        plt.scatter(data[variable], data['G3'], s=density*5000, cmap='viridis', edgecolor='k', alpha=0.7)
+        plt.colorbar(label='Density')
+        plt.title(f' {returnGender()} {variable} vs Final Grade')
+        plt.show()
 
 # %%
 # scatterplot of famsup (family support) and G3
-for variable in ['famsup']:
-    x = df[variable].replace(['no', 'yes'], [0, 1])
-    y = df['G3']
+for data in dataframes:
+    for variable in ['famsup']:
+        x = data[variable].replace(['no', 'yes'], [0, 1])
+        y = data['G3']
 
-    xy = np.vstack([x, y])
-    density = stats.gaussian_kde(xy)(xy)
+        xy = np.vstack([x, y])
+        density = stats.gaussian_kde(xy)(xy)
 
-    plt.figure(figsize=(10, 5))
-    plt.scatter(df[variable], df['G3'], s=density*1000, cmap='viridis', edgecolor='k', alpha=0.7)
-    plt.colorbar(label='Density')
-    plt.title(f'{variable} vs Final Grade')
-    plt.show()
+        plt.figure(figsize=(10, 5))
+        plt.scatter(data[variable], data['G3'], s=density*5000, cmap='viridis', edgecolor='k', alpha=0.7)
+        plt.colorbar(label='Density')
+        plt.title(f'{returnGender()} {variable} vs Final Grade')
+        plt.show()
 
 # %%
 # scatterplot of guardian and G3
-for variable in ['guardian']:
-    x = df[variable].replace(['mother', 'father', 'other'], [0, 1, 2])
-    y = df['G3']
+for data in dataframes:
+    for variable in ['guardian']:
+        x = data[variable].replace(['mother', 'father', 'other'], [0, 1, 2])
+        y = data['G3']
 
-    xy = np.vstack([x, y])
-    density = stats.gaussian_kde(xy)(xy)
+        xy = np.vstack([x, y])
+        density = stats.gaussian_kde(xy)(xy)
 
-    plt.figure(figsize=(10, 5))
-    plt.scatter(df[variable], df['G3'], s=density*1000, cmap='viridis', edgecolor='k', alpha=0.7)
-    plt.colorbar(label='Density')
-    plt.title(f'{variable} vs Final Grade')
-    plt.show()
+        plt.figure(figsize=(10, 5))
+        plt.scatter(data[variable], data['G3'], s=density*5000, cmap='viridis', edgecolor='k', alpha=0.7)
+        plt.colorbar(label='Density')
+        plt.title(f'{returnGender()} {variable} vs Final Grade')
+        plt.show()
 
 #%% 
 # scatterplot of famsize and G3
-for variable in ['famsize']:
-    x = df[variable].replace(['GT3','LE3'], [0, 1])
-    y = df['G3']
+for data in dataframes:
+    for variable in ['famsize']:
+        x = data[variable].replace(['GT3','LE3'], [0, 1])
+        y = data['G3']
 
-    xy = np.vstack([x, y])
-    density = stats.gaussian_kde(xy)(xy)
+        xy = np.vstack([x, y])
+        density = stats.gaussian_kde(xy)(xy)
 
-    plt.figure(figsize=(10, 5))
-    plt.scatter(df[variable], df['G3'], s=density*1000, cmap='viridis', edgecolor='k', alpha=0.7)
-    plt.colorbar(label='Density')
-    plt.title(f'{variable} vs Final Grade')
-    plt.show()
+        plt.figure(figsize=(10, 5))
+        plt.scatter(data[variable], data['G3'], s=density*5000, cmap='viridis', edgecolor='k', alpha=0.7)
+        plt.colorbar(label='Density')
+        plt.title(f'{returnGender()} {variable} vs Final Grade')
+        plt.show()
 
 #%%
-# scatterplot of Pstatus (cohabitation status) and G3
-for variable in ['Pstatus']:
-    x = df[variable].replace(['A', 'T'], [0, 1])
-    y = df['G3']
+for data in dataframes:
+    for variable in ['address']:
+        x = data[variable].replace(['U', 'R'], [0, 1])
+        y = data['G3']
 
-    xy = np.vstack([x, y])
-    density = stats.gaussian_kde(xy)(xy)
+        xy = np.vstack([x, y])
+        density = stats.gaussian_kde(xy)(xy)
 
-    plt.figure(figsize=(10, 5))
-    plt.scatter(df[variable], df['G3'], s=density*1000, cmap='viridis', edgecolor='k', alpha=0.7)
-    plt.colorbar(label='Density')
-    plt.title(f'{variable} vs Final Grade')
-    plt.show()
+        plt.figure(figsize=(10, 5))
+        plt.scatter(data[variable], data['G3'], s=density*5000, cmap='viridis', edgecolor='k', alpha=0.7)
+        plt.colorbar(label='Density')
+        plt.title(f'{returnGender()} {variable} vs Final Grade')
+        plt.show()
 
 # %%
 # transform all the categorical variables to numerical values
-df['school'] = df['school'].apply(lambda x: 1 if x == 'GP' else 0)
 df['sex'] = df['sex'].apply(lambda x: 1 if x == 'F' else 0)
 df['address'] = df['address'].apply(lambda x: 1 if x == 'U' else 0)
 df['famsize'] = df['famsize'].apply(lambda x: 1 if x == 'LE3' else 0)
 df['Pstatus'] = df['Pstatus'].apply(lambda x: 1 if x == 'T' else 0)
-df['schoolsup'] = df['schoolsup'].apply(lambda x: 1 if x == 'yes' else 0)
 df['famsup'] = df['famsup'].apply(lambda x: 1 if x == 'yes' else 0)
-df['paid'] = df['paid'].apply(lambda x: 1 if x == 'yes' else 0)
-df['activities'] = df['activities'].apply(lambda x: 1 if x == 'yes' else 0)
-df['nursery'] = df['nursery'].apply(lambda x: 1 if x == 'yes' else 0)
-df['higher'] = df['higher'].apply(lambda x: 1 if x == 'yes' else 0)
-df['internet'] = df['internet'].apply(lambda x: 1 if x == 'yes' else 0)
-df['romantic'] = df['romantic'].apply(lambda x: 1 if x == 'yes' else 0)
 
 # %%
 # transform nominal variables to numerical values
 df['Mjob'] = df['Mjob'].replace(['teacher', 'health', 'services', 'at_home', 'other'], [0, 1, 2, 3, 4])
 df['Fjob'] = df['Fjob'].replace(['teacher', 'health', 'services', 'at_home', 'other'], [0, 1, 2, 3, 4])
-df['reason'] = df['reason'].replace(['home', 'reputation', 'course', 'other'], [0, 1, 2, 3])
 df['guardian'] = df['guardian'].replace(['mother', 'father', 'other'], [0, 1, 2])
-
-# %%  plot the distribution of the target variable G3 before categorization
-plt.figure(figsize=(10, 5))
-sns.histplot(df['G3'])
-plt.show()
-
-# %% mean and std before categorization
-mean = df.mean()
-std = df.std()
-
-print(mean)
-print(std)
 
 # %%
 # Categorize G3 into 4 categories based on the distribution
@@ -187,34 +168,39 @@ count_of_value = (df['G3'] == 4).sum()
 print(f'Count of value : {count_of_value}')
 
 # %% 
-# find the mean and standard deviation of each column
-mean = df.mean()
-std = df.std()
-
-print(mean)
-print(std)
-# %%
-# plot the distribution of the target variable G3 after categorization
-plt.figure(figsize=(10, 5))
-sns.histplot(df['G3'])
-plt.show()
-
-# %%
-# plot the distribution of all the features in the dataset
-df.hist(figsize=(20, 20))
-plt.show()
-
-# %% 
-# find value counts of the distribution of all features
-for col in df.columns:
-    print(col)
-    print(df[col].value_counts(normalize=True))
-    print()
-
-# %% 
 # remove entries where Medu =0 and Fedu = 0, as there are not many entries with these values
 df = df[df['Fedu'] != 0]
 df = df[df['Medu'] != 0]
+
+# %%
+df_boys = df[df['sex'] == 0]
+df_girls = df[df['sex'] == 1]
+df_boys = df_boys.drop(['sex'], axis=1)
+df_girls = df_girls.drop(['sex'], axis=1)
+dataframes = [df_boys, df_girls, df]
+
+# %%
+for data in dataframes:
+    plt.figure(figsize=(10, 5))
+    sns.histplot(data['G3'])
+    plt.title(f'{returnGender()} G3 dist')
+    plt.show()
+    
+# %%
+# plot the distribution of all the features in the dataset
+for data in dataframes:
+    data.hist(figsize=(20, 20))
+    plt.title(returnGender())
+    plt.show()
+
+# %% 
+# find value counts of the distribution of all features
+for data in dataframes:
+    for col in data.columns:
+        print(col)
+        print(data[col].value_counts(normalize=True))
+        print(returnGender())
+        print()
 
 # %%
 # export the data

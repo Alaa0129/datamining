@@ -4,26 +4,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
-
-pd.set_option('display.max_columns', None)
-df = pd.read_csv('Student_Alcohol_Consumption_Data/student-transformed.csv')
-
-df.head()
-
-df = df.drop('G1', axis=1)
-df = df.drop('G2', axis=1)
-df = df.drop('failures', axis=1)
-# df.drop('G3', axis=1).corrwith(df.G3).sort_values().plot(kind='barh', figsize=(15, 10))
-
-corr = df.corr(method='pearson', numeric_only=True)
-corr
-
-fig, ax = plt.subplots(figsize=(30,30))
-sns.heatmap(corr, vmin= -1, vmax=1, xticklabels=corr.columns, yticklabels=corr.columns, cmap='RdBu_r', annot=True, linewidth=0.5, ax=ax)
+from Preprocessing import *
 
 # %%
 # Correlation matrix for family characteristics
-def plotCorrelationMatrix(df, graphWidth):
+def plotCorrelationMatrix(df, graphWidth, gender = None):
     name = 'Family Characteristics'
     df = df[[col for col in df if df[col].nunique() > 1]] # keep columns where there are more than 1 unique values
     if df.shape[1] < 2:
@@ -36,14 +21,18 @@ def plotCorrelationMatrix(df, graphWidth):
     plt.yticks(range(len(corr.columns)), corr.columns)
     plt.gca().xaxis.tick_bottom()
     plt.colorbar(corrMat)
-    plt.title(f'Correlation Matrix for {name}', fontsize=15)
+    plt.title(f'{gender} Correlation Matrix for {name}', fontsize=15)
     plt.show()
 
-# %% define list of variables to check for outliers, based on family characteristics
-variables = ['address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'guardian', 'traveltime', 'famsup', 'internet', 'famrel']
+# %% 
+def returnGender():
+    return 'Male' if data is df_boys else 'Female' if data is df_girls else 'Combined'
 
-data = df[['address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'guardian', 'traveltime', 'famsup', 'internet', 'famrel', 'G3']]
-plotCorrelationMatrix(data, 8)
+# %% define list of variables to check for outliers, based on family characteristics
+variables = ['address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'guardian', 'traveltime', 'famsup', 'famrel']
+
+for data in dataframes:
+    plotCorrelationMatrix(data, 8, returnGender())
 
 # %%
 none_binary_variables = ['Medu', 'Fedu', 'traveltime', 'famrel', 'Mjob', 'Fjob']
@@ -63,36 +52,33 @@ for variable in variables:
     plt.title(variable)
     plt.show()
 
-#%%
-# remove outliers, if relevant
-#filtered_data = tmp[~outlier_masks]
-#df['Medu'] = filtered_data
+# %%
+for data in dataframes:
+    for variable in ['Fedu', 'Medu', 'famrel']:
+        pearson_correlation = data[variable].corr(data['G3'])
+        print(f'Pearson correlation between {variable} and G3: {pearson_correlation}')
+        plt.figure(figsize=(10, 5))
+        sns.regplot(x=variable, y='G3', data=data, color='blue', line_kws={'color': 'red'}, label='best-fit line')
+        plt.xlabel(variable)
+        plt.ylabel('Final Grade')
+        plt.title(f'{returnGender()} {variable} vs Final Grade')
+        plt.legend()
+        plt.show()
 
 # %%
-# Look at pearson correlation between continuous variables and G3
-for variable in ['Fedu', 'Medu', 'famrel']:
-    pearson_correlation = df[variable].corr(df['G3'])
-    print(f'Pearson correlation between {variable} and G3: {pearson_correlation}')
-    plt.figure(figsize=(10, 5))
-    sns.regplot(x=variable, y='G3', data=df, color='blue', line_kws={'color': 'red'}, label='best-fit line')
-    plt.xlabel(variable)
-    plt.ylabel('Final Grade')
-    plt.title(f'{variable} vs Final Grade')
-    plt.legend()
+for data in dataframes:
+    data.groupby('Medu')['G3'].mean().plot(kind='bar') 
+    plt.title(f'{returnGender()} Average Final Grade by Mother Education Level')
     plt.show()
 
-# %% find average score for each Medu and Fedu level and plot in scatterplot
-df.groupby('Medu')['G3'].mean().plot(kind='bar') 
-plt.title('Average Final Grade by Mother Education Level')
-plt.show()
-
-df.groupby('Fedu')['G3'].mean().plot(kind='bar')
-plt.title('Average Final Grade by Father Education Level')
-plt.show()
+    data.groupby('Fedu')['G3'].mean().plot(kind='bar')
+    plt.title(f'{returnGender()} Average Final Grade by Father Education Level')
+    plt.show()
 
 # %%
-df.drop('G3', axis=1).corrwith(df.G3).sort_values().plot(kind='barh', figsize=(15, 10))
+for data in dataframes:
+    data.drop('G3', axis=1).corrwith(data.G3).sort_values().plot(kind='barh', figsize=(15, 10))
+    plt.title(f'{returnGender()} Correlation with Final Grade')
+    plt.show()
 
-# %%
-df.head()
 # %%
