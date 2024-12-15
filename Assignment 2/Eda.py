@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
 from Preprocessing import *
+from statsmodels.formula.api import ols
 
 # %%
 # Correlation matrix for family characteristics
@@ -81,4 +82,46 @@ for data in dataframes:
     plt.title(f'{returnGender()} Correlation with Final Grade')
     plt.show()
 
+# %%
+
+
+df_boys_p = df_boys[['Medu', 'G3']]
+df_girls_p = df_girls[['Medu', 'G3']]
+df_boys_p['Gender'] = 0
+df_girls_p['Gender'] = 1
+
+df_combined_p = pd.concat([df_boys_p, df_girls_p], ignore_index=True)
+
+formula = 'G3 ~ Medu + Gender + Medu:Gender'
+interaction_model = ols(formula, data=df_combined_p).fit()
+
+print(interaction_model.summary())
+# %%
+df_boys_p = df_boys[['Fedu', 'G3']]
+df_girls_p = df_girls[['Fedu', 'G3']]
+df_boys_p['Gender'] = 0
+df_girls_p['Gender'] = 1
+
+df_combined_p = pd.concat([df_boys_p, df_girls_p], ignore_index=True)
+
+formula = 'G3 ~ Fedu + Gender + Fedu:Gender'
+interaction_model = ols(formula, data=df_combined_p).fit()
+
+print(interaction_model.summary())
+
+# %%
+
+df_boys_p = df_boys[['Fedu', 'Medu', 'G3']]
+df_girls_p = df_girls[['Fedu', 'Medu', 'G3']]
+df_boys_p['Gender'] = 0
+df_girls_p['Gender'] = 1
+
+df_combined_p = pd.concat([df_boys_p, df_girls_p], ignore_index=True)
+
+
+formula = 'G3 ~ Medu + Fedu + Gender + Medu:Gender + Fedu:Gender + Medu:Fedu'
+
+interaction_model = ols(formula, data=df_combined_p).fit()
+
+print(interaction_model.summary())
 # %%
