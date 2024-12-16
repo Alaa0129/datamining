@@ -4,8 +4,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
 from scipy import stats
 
 # %%
@@ -32,34 +30,36 @@ def plotPerColumnDistribution(df, nGraphShown, nGraphPerRow, title = None):
     plt.tight_layout(pad = 1.0, w_pad = 1.0, h_pad = 1.0)
     plt.show()
 
-# %%
+# %% Return the label for current dataset
 def returnGender():
     return 'Male' if data is df_boys else 'Female' if data is df_girls else 'Combined'
 
 
-# %%
+# %% load the dataset for students studying portuguese
 df_por = pd.read_csv('Student_Alcohol_Consumption_Data/student-por.csv')
-# %%
-# Load the data
+# %% load the dataset for students studying math
 df_mat = pd.read_csv('Student_Alcohol_Consumption_Data/student-mat.csv')
-df_mat.head()
 
-# %%
+# %% combine the two datasets and remove duplicates
 df = pd.concat([df_mat, df_por]).drop_duplicates(subset=['school', 'sex', 'age', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'reason', 'guardian', 'traveltime', 'failures', 'schoolsup', 'famsup', 'activities', 'nursery', 'higher', 'internet', 'romantic', 'famrel', 'freetime', 'goout', 'Dalc', 'Walc', 'health']).reset_index(drop=True)
 df.head()
 
 # see how many rows
 print(df.shape)
 
-# %% 
+# %% extract the features related to family relations
 df = df[['sex', 'address', 'famsize', 'Pstatus', 'Medu', 'Fedu', 'Mjob', 'Fjob', 'guardian', 'traveltime', 'famsup', 'famrel', 'G3']]
 
+#Create two dataframes cossistent of only male and female students
 df_boys = df[df['sex'] == 'M']
 df_girls = df[df['sex'] == 'F']
+#Drop Sex feature as it is not family related
 df_boys = df_boys.drop(['sex'], axis=1)
 df_girls = df_girls.drop(['sex'], axis=1)
+#combine dataframes into an array of dataframes
 dataframes = [df_boys, df_girls, df]
 
+#print the column distribution for each dataframe
 plotPerColumnDistribution(df.drop(['sex'], axis=1), 12, 3)
 plotPerColumnDistribution(df_boys, 12, 3, 'Male')
 plotPerColumnDistribution(df_girls, 12, 3, 'Female')
@@ -128,7 +128,8 @@ for data in dataframes:
         plt.title(f'{returnGender()} {variable} vs Final Grade')
         plt.show()
 
-#%%
+#%% 
+# scatter plot for address and G3
 for data in dataframes:
     for variable in ['address']:
         x = data[variable].replace(['U', 'R'], [0, 1])
@@ -157,29 +158,31 @@ df['Mjob'] = df['Mjob'].replace(['teacher', 'health', 'services', 'at_home', 'ot
 df['Fjob'] = df['Fjob'].replace(['teacher', 'health', 'services', 'at_home', 'other'], [0, 1, 2, 3, 4])
 df['guardian'] = df['guardian'].replace(['mother', 'father', 'other'], [0, 1, 2])
 
+
 # %%
 # Categorize G3 into 4 categories based on the distribution
 # find distribution of G3
 
 df['G3'] = df['G3'].apply(lambda x: 1 if x <= 8 else 2 if x <= 10 else 3 if x <= 13 else 4)
 
-#%%
+#%% Check the count for data entries for each interval
 count_of_value = (df['G3'] == 4).sum()
 print(f'Count of value : {count_of_value}')
+
 
 # %% 
 # remove entries where Medu =0 and Fedu = 0, as there are not many entries with these values
 df = df[df['Fedu'] != 0]
 df = df[df['Medu'] != 0]
 
-# %%
+# %% Again set dataframes
 df_boys = df[df['sex'] == 0]
 df_girls = df[df['sex'] == 1]
 df_boys = df_boys.drop(['sex'], axis=1)
 df_girls = df_girls.drop(['sex'], axis=1)
 dataframes = [df_boys, df_girls, df]
 
-# %%
+# %% visualize the G3 distribution
 for data in dataframes:
     plt.figure(figsize=(10, 5))
     sns.histplot(data['G3'])
@@ -206,6 +209,6 @@ for data in dataframes:
 # export the data
 df.to_csv('Student_Alcohol_Consumption_Data/student-transformed.csv', index=False)
 
-# %%
+# %% shows df head
 df.head()
 # %%

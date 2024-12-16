@@ -25,7 +25,7 @@ def plotCorrelationMatrix(df, graphWidth, gender = None):
     plt.title(f'{gender} Correlation Matrix for {name}', fontsize=15)
     plt.show()
 
-# %% 
+# %% Functions to return label for current dataset
 def returnGender():
     return 'Male' if data is df_boys else 'Female' if data is df_girls else 'Combined'
 
@@ -53,7 +53,7 @@ for variable in variables:
     plt.title(variable)
     plt.show()
 
-# %%
+# %% Calculate Pearson r and visualize relation in scatter plot with best fit linear regression line.
 for data in dataframes:
     for variable in ['Fedu', 'Medu', 'famrel']:
         pearson_correlation = data[variable].corr(data['G3'])
@@ -66,7 +66,7 @@ for data in dataframes:
         plt.legend()
         plt.show()
 
-# %%
+# %% Visualize the average student grade based on mother and fathers education level
 for data in dataframes:
     data.groupby('Medu')['G3'].mean().plot(kind='bar') 
     plt.title(f'{returnGender()} Average Final Grade by Mother Education Level')
@@ -76,14 +76,13 @@ for data in dataframes:
     plt.title(f'{returnGender()} Average Final Grade by Father Education Level')
     plt.show()
 
-# %%
+# %% Visuaælize correlatio between all features and final grade.
 for data in dataframes:
     data.drop('G3', axis=1).corrwith(data.G3).sort_values().plot(kind='barh', figsize=(15, 10))
     plt.title(f'{returnGender()} Correlation with Final Grade')
     plt.show()
 
-# %%
-
+# %% Update Perform OLS on Medu and gender with regard to G3
 
 df_boys_p = df_boys[['Medu', 'G3']]
 df_girls_p = df_girls[['Medu', 'G3']]
@@ -96,7 +95,8 @@ formula = 'G3 ~ Medu + Gender + Medu:Gender'
 interaction_model = ols(formula, data=df_combined_p).fit()
 
 print(interaction_model.summary())
-# %%
+# %% Update Perform OLS on Medu and gender with regard to G3
+
 df_boys_p = df_boys[['Fedu', 'G3']]
 df_girls_p = df_girls[['Fedu', 'G3']]
 df_boys_p['Gender'] = 0
@@ -109,19 +109,4 @@ interaction_model = ols(formula, data=df_combined_p).fit()
 
 print(interaction_model.summary())
 
-# %%
-
-df_boys_p = df_boys[['Fedu', 'Medu', 'G3']]
-df_girls_p = df_girls[['Fedu', 'Medu', 'G3']]
-df_boys_p['Gender'] = 0
-df_girls_p['Gender'] = 1
-
-df_combined_p = pd.concat([df_boys_p, df_girls_p], ignore_index=True)
-
-
-formula = 'G3 ~ Medu + Fedu + Gender + Medu:Gender + Fedu:Gender + Medu:Fedu'
-
-interaction_model = ols(formula, data=df_combined_p).fit()
-
-print(interaction_model.summary())
 # %%
